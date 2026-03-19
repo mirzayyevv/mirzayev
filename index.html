@@ -1,11 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Təmiz Lökbatan</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f1f1f1;
+}
+
+.header {
+    background: #2ecc71;
+    color: white;
+    padding: 15px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.card {
+    background: white;
+    margin: 12px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.counter {
+    font-size: 28px;
+    color: red;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #2ecc71;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+}
+
+.bad { color: red; }
+.good { color: green; }
+
+#reports {
+    font-size: 14px;
+}
+</style>
 </head>
+
 <body>
-    
+
+<div class="header">
+🗑️ Təmiz Lökbatan
+</div>
+
+<div class="card">
+<b>Qaranlıq təhlükədir, amma zibil xəstəlikdir.</b>
+</div>
+
+<div class="card">
+<h3>🗺️ Problem xəritəsi</h3>
+<iframe 
+width="100%" 
+height="200" 
+src="https://maps.google.com/maps?q=lokbatan&t=&z=13&ie=UTF8&iwloc=&output=embed">
+</iframe>
+<p class="bad">🔴 Problemli zonalar artmaqdadır</p>
+</div>
+
+<div class="card">
+<h3>⏱️ Yığılmayan zibil</h3>
+<p class="counter" id="counter">120 kg</p>
+<button onclick="increase()">Artır 😷</button>
+</div>
+
+<div class="card">
+<h3>📩 Şikayət et</h3>
+<input id="input" placeholder="Məsələn: 3-cü küçə zibillə doludur">
+<br><br>
+<button onclick="send()">Göndər</button>
+
+<div id="reports"></div>
+</div>
+
+<div class="card">
+<h3>🚛 Həll</h3>
+<p>Yeni zibil maşını və əlavə qablar ilə problem qısa zamanda həll olunur.</p>
+</div>
+
+<script>
+let count = 120;
+
+function increase() {
+    count += 20;
+    document.getElementById("counter").innerText = count + " kg";
+}
+
+function send() {
+    let input = document.getElementById("input").value;
+    if(input === "") return;
+
+    let div = document.createElement("p");
+    div.innerText = "📍 " + input;
+
+    document.getElementById("reports").appendChild(div);
+    document.getElementById("input").value = "";
+}
+</script>
+
 </body>
 </html>
