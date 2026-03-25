@@ -1,0 +1,74 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+}
+
+.cv {
+    display: flex;
+    max-width: 1000px;
+    margin: 30px auto;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+/* LEFT */
+.left {
+    width: 35%;
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+}
+
+.profile {
+    text-align: center;
+}
+
+.profile img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.profile h2 {
+    margin: 10px 0 5px;
+}
+
+.section {
+    margin-top: 20px;
+}
+
+.section h3 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.left a {
+    color: #1abc9c;
+    text-decoration: none;
+}
+
+/* RIGHT */
+.right {
+    width: 65%;
+    padding: 20px;
+}
+
+.right h3 {
+    color: #2c3e50;
+}
+
+.right ul {
+    padding-left: 20px;
+}
+
+/* RESPONSIVE */
+@media(max-width: 768px) {
+    .cv {
+        flex-direction: column;
+    }
+
+    .left, .right {
+        width: 100%;
+    }
+}
