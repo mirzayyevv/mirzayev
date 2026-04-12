@@ -1,121 +1,886 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Təmiz Lökbatan</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #f1f1f1;
-}
-
-.header {
-    background: #2ecc71;
-    color: white;
-    padding: 15px;
-    font-size: 20px;
-    text-align: center;
-}
-
-.card {
-    background: white;
-    margin: 12px;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.counter {
-    font-size: 28px;
-    color: red;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    background: #2ecc71;
-    color: white;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-}
-
-.bad { color: red; }
-.good { color: green; }
-
-#reports {
-    font-size: 14px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LökbatanEco | Antisanitariya Layihəsi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="header">
-🗑️ Təmiz Lökbatan
-</div>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursorFollower"></div>
 
-<div class="card">
-<b>Qaranlıq təhlükədir, amma zibil xəstəlikdir.</b>
-</div>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🌿 LökbatanEco</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar"></div>
+        </div>
+        <p class="loading-text">Yüklənir...</p>
+    </div>
 
-<div class="card">
-<h3>🗺️ Problem xəritəsi</h3>
-<iframe 
-width="100%" 
-height="200" 
-src="https://maps.google.com/maps?q=lokbatan&t=&z=13&ie=UTF8&iwloc=&output=embed">
-</iframe>
-<p class="bad">🔴 Problemli zonalar artmaqdadır</p>
-</div>
+    <!-- Side Panel Trigger -->
+    <div class="side-panel-trigger" onclick="toggleSidePanel()">
+        <i class="fas fa-chevron-right"></i>
+    </div>
 
-<div class="card">
-<h3>⏱️ Yığılmayan zibil</h3>
-<p class="counter" id="counter">120 kg</p>
-<button onclick="increase()">Artır 😷</button>
-</div>
+    <!-- Side Panel -->
+    <div class="side-panel" id="sidePanel">
+        <button class="side-panel-close" onclick="toggleSidePanel()">
+            <i class="fas fa-times"></i>
+        </button>
 
-<div class="card">
-<h3>📩 Şikayət et</h3>
-<input id="input" placeholder="Məsələn: 3-cü küçə zibillə doludur">
-<br><br>
-<button onclick="send()">Göndər</button>
+        <div class="side-panel-header">
+            <h3>Təmiz <span>Lökbatan</span></h3>
+            <p>Antisanitariya probleminə qarşı birlikdə mübarizə aparaq. Daha yaxşı bir gələcək üçün bu gün hərəkətə keç!</p>
+        </div>
 
-<div id="reports"></div>
-</div>
+        <div class="side-menu-section">
+            <div class="side-menu-title">Naviqasiya</div>
+            <a href="#hero" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-home"></i> Ana Səhifə
+            </a>
+            <a href="#news" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-newspaper"></i> Xəbərlər & Elanlar
+            </a>
+            <a href="#campaign" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-bullhorn"></i> Kampaniya
+            </a>
+            <a href="#gallery" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-images"></i> Qalereya
+            </a>
+            <a href="#complaint" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-comment-dots"></i> Şikayətlər
+            </a>
+            <a href="#map-section" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-map-marker-alt"></i> Xəritə
+            </a>
+        </div>
 
-<div class="card">
-<h3>🚛 Həll</h3>
-<p>Yeni zibil maşını və əlavə qablar ilə problem qısa zamanda həll olunur.</p>
-</div>
+        <div class="side-menu-section">
+            <div class="side-menu-title">Sürətli Keçidlər</div>
+            <a href="#" class="side-menu-item" onclick="toggleSidePanel(); openVolunteerPage();">
+                <i class="fas fa-hand-holding-heart"></i> Könüllü Ol
+            </a>
+            <a href="#complaint" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-pen"></i> Şikayət Yaz
+            </a>
+            <a href="#campaign" class="side-menu-item" onclick="toggleSidePanel()">
+                <i class="fas fa-users"></i> Kampaniyaya Qoşul
+            </a>
+        </div>
 
-<script>
-let count = 120;
+        <div class="side-menu-section">
+            <div class="side-menu-title">Əlaqə</div>
+            <a href="tel:+994501234567" class="side-menu-item">
+                <i class="fas fa-phone"></i> +994 50 123 45 67
+            </a>
+            <a href="mailto:info@lokbataneco.az" class="side-menu-item">
+                <i class="fas fa-envelope"></i> info@lokbataneco.az
+            </a>
+            <a href="#" class="side-menu-item">
+                <i class="fas fa-map-marker-alt"></i> Lökbatan, Bakı
+            </a>
+        </div>
 
-function increase() {
-    count += 20;
-    document.getElementById("counter").innerText = count + " kg";
-}
+        <div class="side-panel-stats">
+            <div class="side-stat">
+                <div class="side-stat-number" id="sideStat1">0</div>
+                <div class="side-stat-label">Könüllü</div>
+            </div>
+            <div class="side-stat">
+                <div class="side-stat-number" id="sideStat2">0</div>
+                <div class="side-stat-label">Layihə</div>
+            </div>
+            <div class="side-stat">
+                <div class="side-stat-number" id="sideStat3">0</div>
+                <div class="side-stat-label">İməcilik</div>
+            </div>
+            <div class="side-stat">
+                <div class="side-stat-number" id="sideStat4">0</div>
+                <div class="side-stat-label">Şikayət həll</div>
+            </div>
+        </div>
+    </div>
 
-function send() {
-    let input = document.getElementById("input").value;
-    if(input === "") return;
+    <!-- Side Panel Overlay -->
+    <div class="side-panel-overlay" id="sidePanelOverlay" onclick="toggleSidePanel()"></div>
 
-    let div = document.createElement("p");
-    div.innerText = "📍 " + input;
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon"><i class="fas fa-leaf"></i></div>
+            <div class="nav-logo-text">Lökbatan<span>Eco</span></div>
+        </a>
 
-    document.getElementById("reports").appendChild(div);
-    document.getElementById("input").value = "";
-}
-</script>
+        <ul class="nav-menu" id="navMenu">
+            <li class="nav-item">
+                <a href="#hero" class="nav-link">Ana Səhifə</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Haqqımızda <i class="fas fa-chevron-down"></i></a>
+                <div class="nav-dropdown">
+                    <a href="#news" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-info-circle"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Layihə Haqqında</h4>
+                            <p>Missiyamız və hədəflərimiz</p>
+                        </div>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-users"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Komandamız</h4>
+                            <p>Layihə üzvləri</p>
+                        </div>
+                    </a>
+                    <a href="#gallery" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Nəticələr</h4>
+                            <p>İndiyə qədər görülən işlər</p>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Fəaliyyət <i class="fas fa-chevron-down"></i></a>
+                <div class="nav-dropdown">
+                    <a href="#news" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Xəbərlər</h4>
+                            <p>Son yeniliklər</p>
+                        </div>
+                    </a>
+                    <a href="#campaign" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-bullhorn"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Kampaniya</h4>
+                            <p>Sosial media kampaniyası</p>
+                        </div>
+                    </a>
+                    <a href="#gallery" class="dropdown-item">
+                        <div class="dropdown-icon"><i class="fas fa-images"></i></div>
+                        <div class="dropdown-info">
+                            <h4>Qalereya</h4>
+                            <p>Şəkillər və görüntülər</p>
+                        </div>
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#complaint" class="nav-link">Şikayətlər</a>
+            </li>
+            <li class="nav-item">
+                <a href="#map-section" class="nav-link">Xəritə</a>
+            </li>
+            <li class="nav-item">
+                <a href="#contact" class="nav-link">Əlaqə</a>
+            </li>
+        </ul>
 
+        <a href="#" class="nav-cta" onclick="openVolunteerPage(); return false;">
+            <i class="fas fa-hand-holding-heart"></i> Könüllü Ol
+        </a>
+
+        <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                Aktiv Layihə — 2025
+            </div>
+            <h1 class="hero-title">
+                Lökbatan Üçün<br>
+                <span>Təmiz Gələcək</span> İnşa Edirik
+            </h1>
+            <p class="hero-subtitle">
+                Lökbatan ərazisində antisanitariya problemlərinin aradan qaldırılması, tullantıların idarə olunması və
+                təmizlənməsi üçün birlikdə çalışırıq. Siz də bu dəyişikliyin bir parçası olun!
+            </p>
+            <div class="hero-buttons">
+                <a href="#campaign" class="btn-primary">
+                    <i class="fas fa-rocket"></i> Kampaniyaya Qoşul
+                </a>
+                <a href="#news" class="btn-secondary">
+                    <i class="fas fa-play-circle"></i> Daha Ətraflı
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-scroll">
+            <span>Aşağı Sürüşdür</span>
+            <div class="scroll-line"></div>
+        </div>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number"><span class="count" data-target="150">0</span>+</div>
+                <div class="hero-stat-label">Könüllü</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number"><span class="count" data-target="12">0</span></div>
+                <div class="hero-stat-label">İməcilik</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number"><span class="count" data-target="5">0</span></div>
+                <div class="hero-stat-label">Ərazi Təmizləndi</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number"><span class="count" data-target="85">0</span>%</div>
+                <div class="hero-stat-label">Məmnuniyyət</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWS & EVENTS SECTION -->
+    <section class="section news-section" id="news">
+        <div class="section-header reveal">
+            <span class="section-badge">
+                <i class="fas fa-newspaper"></i> Xəbərlər & Elanlar
+            </span>
+            <h2 class="section-title">Son <span>Yeniliklər</span> və Elanlar</h2>
+            <p class="section-desc">LökbatanEco layihəsi çərçivəsində həyata keçirilən tədbirlər və gələcək planlar haqqında məlumatlar</p>
+        </div>
+
+        <div class="news-grid">
+            <!-- Card 1 - İməcilik -->
+            <div class="news-card reveal reveal-delay-1">
+                <div class="news-card-image">
+                    <img src="https://images.unsplash.com/photo-1558008258-3256797b43f3?w=600" alt="İməcilik">
+                    <span class="news-card-category event">İməcilik</span>
+                </div>
+                <div class="news-card-content">
+                    <div class="news-card-date">
+                        <i class="far fa-calendar"></i> 15 Yanvar 2025
+                    </div>
+                    <h3 class="news-card-title">Lökbatanda Böyük Təmizlik İməciliyi Keçirildi</h3>
+                    <p class="news-card-desc">
+                        50-dən çox könüllünün iştirakı ilə Lökbatan ərazisində geniş miqyaslı təmizlik aksiyası keçirildi.
+                        3 ton tullantı toplanılaraq utilizasiya mərkəzinə göndərildi.
+                    </p>
+                    <a href="#" class="news-card-link">
+                        Ətraflı Oxu <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card 2 - Könüllülük -->
+            <div class="news-card reveal reveal-delay-2">
+                <div class="news-card-image">
+                    <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600" alt="Könüllülük">
+                    <span class="news-card-category volunteer">Könüllülük</span>
+                </div>
+                <div class="news-card-content">
+                    <div class="news-card-date">
+                        <i class="far fa-calendar"></i> 20 Yanvar 2025
+                    </div>
+                    <h3 class="news-card-title">Könüllü Qeydiyyatı Açıqdır — İndi Qoşul!</h3>
+                    <p class="news-card-desc">
+                        Lökbatanın daha təmiz bir yer olması üçün könüllülərimizə ehtiyacımız var.
+                        Yaşından, peşəsindən asılı olmayaraq hər kəs qoşula bilər!
+                    </p>
+                    <a href="#" class="news-card-link" onclick="openVolunteerPage(); return false;">
+                        Könüllü Ol <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Card 3 - Yeni Layihə -->
+            <div class="news-card reveal reveal-delay-3">
+                <div class="news-card-image">
+                    <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600" alt="Tullantı İdarəetmə">
+                    <span class="news-card-category event">Yeni Layihə</span>
+                </div>
+                <div class="news-card-content">
+                    <div class="news-card-date">
+                        <i class="far fa-calendar"></i> 25 Yanvar 2025
+                    </div>
+                    <h3 class="news-card-title">Tullantı Ayrışdırma Proqramı Başladı</h3>
+                    <p class="news-card-desc">
+                        Lökbatan ərazisində pilot tullantı ayrışdırma proqramı işə salındı. Plastik, kağız və
+                        üzvi tullantılar üçün ayrıca konteynerlar quraşdırıldı.
+                    </p>
+                    <a href="#" class="news-card-link">
+                        Ətraflı Oxu <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CAMPAIGN SECTION -->
+    <section class="section campaign-section" id="campaign">
+        <div class="section-header reveal">
+            <span class="section-badge">
+                <i class="fas fa-bullhorn"></i> Sosial Media Kampaniyası
+            </span>
+            <h2 class="section-title">Birlikdə <span>Dəyişdirək</span></h2>
+        </div>
+
+        <div class="campaign-card reveal">
+            <div class="campaign-icon">
+                <i class="fas fa-hands-helping"></i>
+            </div>
+            <h2 class="campaign-slogan">
+                "Sən də bizə qoşularaq <span>gələcəyimiz</span> üçün addım at"
+            </h2>
+            <p class="campaign-text">
+                Sosial media kampaniyamıza qoşulmaqla Lökbatanın təmizlənməsinə öz töhfəni ver.
+                Hər bir səs, hər bir paylaşım dəyişikliyin başlanğıcıdır.
+            </p>
+            <div class="campaign-buttons">
+                <button class="btn-join" onclick="joinCampaign()">
+                    <i class="fas fa-check-circle"></i> Qoşuldum!
+                </button>
+                <button class="btn-decline" onclick="declineCampaign()">
+                    <i class="fas fa-times-circle"></i> Hələlik Yox
+                </button>
+            </div>
+
+            <div class="campaign-counter">
+                <div class="counter-item">
+                    <div class="counter-number"><span class="count" data-target="347">0</span></div>
+                    <div class="counter-label">Qoşulan</div>
+                </div>
+                <div class="counter-item">
+                    <div class="counter-number"><span class="count" data-target="1200">0</span>+</div>
+                    <div class="counter-label">Paylaşım</div>
+                </div>
+                <div class="counter-item">
+                    <div class="counter-number"><span class="count" data-target="89">0</span>%</div>
+                    <div class="counter-label">Dəstək</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY SECTION -->
+    <section class="section gallery-section" id="gallery">
+        <div class="section-header reveal">
+            <span class="section-badge">
+                <i class="fas fa-images"></i> Şəkillər
+            </span>
+            <h2 class="section-title">Fəaliyyət <span>Qalereyası</span></h2>
+            <p class="section-desc">İməciliklərdən, könüllü tədbirlərindən və ərazinin dəyişim prosesindən görüntülər</p>
+        </div>
+
+        <div class="gallery-grid">
+            <!-- 1 - Böyük şəkil -->
+            <div class="gallery-item reveal" onclick="openLightbox(this)">
+                <img src="https://images.unsplash.com/photo-1558008258-3256797b43f3?w=800" alt="Əsas Təmizlik">
+                <div class="gallery-overlay">
+                    <div class="gallery-overlay-text">
+                        <h4>Əsas Təmizlik Aksiyası</h4>
+                        <p>Lökbatan, 2025</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 2 - Könüllülər -->
+            <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox(this)">
+                <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600" alt="Könüllülər">
+                <div class="gallery-overlay">
+                    <div class="gallery-overlay-text">
+                        <h4>Könüllü Komandası</h4>
+                        <p>Birlikdə güclüyük</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 3 - Zibil toplama (düzəldilmiş) -->
+            <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox(this)">
+                <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=600" alt="Zibil Toplama">
+                <div class="gallery-overlay">
+                    <div class="gallery-overlay-text">
+                        <h4>Zibil Toplama Aksiyası</h4>
+                        <p>Ekoloji addım</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 4 - Yaşıl ərazi -->
+            <div class="gallery-item reveal reveal-delay-1" onclick="openLightbox(this)">
+                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600" alt="Yaşıl">
+                <div class="gallery-overlay">
+                    <div class="gallery-overlay-text">
+                        <h4>Yaşıl Ərazi</h4>
+                        <p>Nəticə</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 5 - Komanda -->
+            <div class="gallery-item reveal reveal-delay-2" onclick="openLightbox(this)">
+                <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=600" alt="Komanda">
+                <div class="gallery-overlay">
+                    <div class="gallery-overlay-text">
+                        <h4>Komanda İşi</h4>
+                        <p>Birlikdə dəyişdiririk</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close"><i class="fas fa-times"></i></button>
+        <img src="" alt="Lightbox" id="lightboxImg">
+    </div>
+
+    <!-- COMPLAINT SECTION -->
+    <section class="section complaint-section" id="complaint">
+        <div class="section-header reveal">
+            <span class="section-badge">
+                <i class="fas fa-comment-dots"></i> Şikayətlər
+            </span>
+            <h2 class="section-title">Səsinizi <span>Eşitdirin</span></h2>
+            <p class="section-desc">Lökbatan ərazisindəki antisanitariya problemləri barədə şikayətinizi bildirin</p>
+        </div>
+
+        <div class="complaint-container">
+            <div class="complaint-form-card reveal">
+                <h3>📝 Şikayət Formu</h3>
+                <p>Probleminizi aşağıdakı formda ətraflı şəkildə qeyd edin</p>
+
+                <form id="complaintForm" onsubmit="submitComplaint(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad Soyad</label>
+                            <input type="text" placeholder="Adınızı daxil edin" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" placeholder="+994 XX XXX XX XX">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" placeholder="email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ərazi / Küçə</label>
+                        <input type="text" placeholder="Problemin olduğu ərazini yazın" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kateqoriya</label>
+                        <select required>
+                            <option value="">Seçin...</option>
+                            <option value="tullanti">Tullantı yığılması</option>
+                            <option value="kanalizasiya">Kanalizasiya problemi</option>
+                            <option value="zibil">Zibil konteyneri yoxdur</option>
+                            <option value="cigirte">Çirkli su</option>
+                            <option value="diger">Digər</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Şikayət Mətni</label>
+                        <textarea placeholder="Probleminizi ətraflı şəkildə təsvir edin..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Şikayəti Göndər
+                    </button>
+                </form>
+            </div>
+
+            <div class="complaint-list-card reveal reveal-delay-2">
+                <h3>📋 Son Şikayətlər</h3>
+                <p>İstifadəçilərin bildirdiyi şikayətlər və onların statusu</p>
+
+                <div class="complaint-filters">
+                    <button class="filter-btn active" onclick="filterComplaints('all', this)">Hamısı</button>
+                    <button class="filter-btn" onclick="filterComplaints('solved', this)">Həll Edildi</button>
+                    <button class="filter-btn" onclick="filterComplaints('pending', this)">Gözlənilir</button>
+                    <button class="filter-btn" onclick="filterComplaints('reviewing', this)">Baxılır</button>
+                </div>
+
+                <div id="complaintList">
+                    <div class="complaint-item" data-status="solved">
+                        <div class="complaint-item-header">
+                            <div class="complaint-item-user">
+                                <div class="complaint-avatar">AH</div>
+                                <div>
+                                    <div class="complaint-user-name">Aynur Həsənova</div>
+                                    <div class="complaint-user-date">2 gün əvvəl</div>
+                                </div>
+                            </div>
+                            <span class="complaint-status status-solved">✅ Həll Edildi</span>
+                        </div>
+                        <p class="complaint-item-text">Məhəllə 4, Gülüstan küçəsində zibil konteynerləri uzun müddətdir boşaldılmır.</p>
+                    </div>
+
+                    <div class="complaint-item" data-status="pending">
+                        <div class="complaint-item-header">
+                            <div class="complaint-item-user">
+                                <div class="complaint-avatar">RM</div>
+                                <div>
+                                    <div class="complaint-user-name">Rəşad Məmmədov</div>
+                                    <div class="complaint-user-date">5 gün əvvəl</div>
+                                </div>
+                            </div>
+                            <span class="complaint-status status-pending">⏳ Gözlənilir</span>
+                        </div>
+                        <p class="complaint-item-text">Lökbatan bazarının arxasında kanalizasiya xətti sıradan çıxıb.</p>
+                    </div>
+
+                    <div class="complaint-item" data-status="reviewing">
+                        <div class="complaint-item-header">
+                            <div class="complaint-item-user">
+                                <div class="complaint-avatar">LQ</div>
+                                <div>
+                                    <div class="complaint-user-name">Leyla Quliyeva</div>
+                                    <div class="complaint-user-date">1 həftə əvvəl</div>
+                                </div>
+                            </div>
+                            <span class="complaint-status status-reviewing">🔍 Baxılır</span>
+                        </div>
+                        <p class="complaint-item-text">Məktəbin yaxınlığındakı boş sahədə qanunsuz zibil tökülür.</p>
+                    </div>
+
+                    <div class="complaint-item" data-status="solved">
+                        <div class="complaint-item-header">
+                            <div class="complaint-item-user">
+                                <div class="complaint-avatar">EN</div>
+                                <div>
+                                    <div class="complaint-user-name">Elvin Nəsirov</div>
+                                    <div class="complaint-user-date">2 həftə əvvəl</div>
+                                </div>
+                            </div>
+                            <span class="complaint-status status-solved">✅ Həll Edildi</span>
+                        </div>
+                        <p class="complaint-item-text">Parkın içindəki zibil qutuları sınıq vəziyyətdədir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MAP SECTION ==================== -->
+    <section class="section map-section" id="map-section">
+        <div class="section-header reveal">
+            <span class="section-badge">
+                <i class="fas fa-map-marked-alt"></i> İnteraktiv Xəritə
+            </span>
+            <h2 class="section-title">Lökbatan <span>Xəritədə</span></h2>
+            <p class="section-desc">Aksiyalarımızın, şikayət nöqtələrinin və könüllü fəaliyyət zonalarının xəritəsi</p>
+        </div>
+
+        <!-- Map Stats Bar -->
+        <div class="map-stats-bar reveal">
+            <div class="map-stat-item">
+                <div class="map-stat-icon" style="background: rgba(82,183,136,0.15); color: #52b788;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <div class="map-stat-number">5</div>
+                    <div class="map-stat-label">Təmizlənmiş Zona</div>
+                </div>
+            </div>
+            <div class="map-stat-item">
+                <div class="map-stat-icon" style="background: rgba(244,162,97,0.15); color: #f4a261;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <div class="map-stat-number">8</div>
+                    <div class="map-stat-label">Problem Nöqtəsi</div>
+                </div>
+            </div>
+            <div class="map-stat-item">
+                <div class="map-stat-icon" style="background: rgba(100,149,237,0.15); color: #6495ED;">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <div>
+                    <div class="map-stat-number">12</div>
+                    <div class="map-stat-label">Aksiya Nöqtəsi</div>
+                </div>
+            </div>
+            <div class="map-stat-item">
+                <div class="map-stat-icon" style="background: rgba(212,168,67,0.15); color: #d4a843;">
+                    <i class="fas fa-recycle"></i>
+                </div>
+                <div>
+                    <div class="map-stat-number">6</div>
+                    <div class="map-stat-label">Konteyner Nöqtəsi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-wrapper reveal">
+            <!-- Legend -->
+            <div class="map-legend">
+                <div class="legend-title"><i class="fas fa-layer-group"></i> Xəritə Açıqlaması</div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #52b788;"></div>
+                    <span>Təmizlənmiş zona</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #e63946;"></div>
+                    <span>Problem nöqtəsi</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #6495ED;"></div>
+                    <span>Aksiya nöqtəsi</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #d4a843;"></div>
+                    <span>Konteyner nöqtəsi</span>
+                </div>
+                <hr style="border-color: rgba(255,255,255,0.08); margin: 12px 0;">
+                <div class="legend-tip">
+                    <i class="fas fa-info-circle" style="color: var(--accent);"></i>
+                    <span>Markerlərə klikləyin — ətraflı məlumat görün</span>
+                </div>
+            </div>
+
+            <!-- Leaflet Map -->
+            <div id="lokbatanMap"></div>
+
+            <!-- Map Controls Info -->
+            <div class="map-controls-info">
+                <div class="control-item"><i class="fas fa-search-plus"></i> Yaxınlaşdır / Uzaqlaşdır</div>
+                <div class="control-item"><i class="fas fa-hand-paper"></i> Xəritəni sürüşdür</div>
+                <div class="control-item"><i class="fas fa-map-pin"></i> Markerlərə klik et</div>
+            </div>
+        </div>
+
+        <!-- CTA altında -->
+        <div class="map-cta reveal">
+            <div class="map-cta-card">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <h4>Problem nöqtəsi bildirin</h4>
+                    <p>Ərazinizdə antisanitariya problemi varsa, şikayət formu vasitəsilə bildirin</p>
+                </div>
+                <a href="#complaint" class="btn-primary" style="white-space: nowrap;">
+                    <i class="fas fa-pen"></i> Bildirin
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOLUNTEER PAGE (Full Screen Overlay) -->
+    <div class="volunteer-page" id="volunteerPage">
+        <button class="volunteer-close" onclick="closeVolunteerPage()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="volunteer-hero">
+            <div>
+                <h1>Könüllü <span>Ol</span></h1>
+                <p>Lökbatanın daha yaşanılan, təmiz və sağlam bir məkana çevrilməsi üçün könüllülərimizə ehtiyacımız var!</p>
+            </div>
+        </div>
+
+        <div class="volunteer-content">
+            <div class="volunteer-info-grid">
+                <div class="volunteer-info-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h4>Çevik Vaxt</h4>
+                    <p>Öz cədvəlinə uyğun iştirak edə bilərsən.</p>
+                </div>
+                <div class="volunteer-info-card">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Sertifikat</h4>
+                    <p>Könüllülük fəaliyyətin üçün rəsmi sertifikat alacaqsan.</p>
+                </div>
+                <div class="volunteer-info-card">
+                    <i class="fas fa-heart"></i>
+                    <h4>Cəmiyyətə Töhfə</h4>
+                    <p>Sənin fəaliyyətin yüzlərlə insanın həyatını daha yaxşı edəcək.</p>
+                </div>
+            </div>
+
+            <div class="volunteer-form">
+                <h3>📋 Könüllü Qeydiyyatı</h3>
+                <p>Aşağıdakı formu dolduraraq könüllü komandasına qoşul</p>
+
+                <form id="volunteerForm" onsubmit="submitVolunteer(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ad</label>
+                            <input type="text" placeholder="Adınız" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Soyad</label>
+                            <input type="text" placeholder="Soyadınız" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" placeholder="email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" placeholder="+994 XX XXX XX XX" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Yaş</label>
+                        <select required>
+                            <option value="">Seçin...</option>
+                            <option value="16-18">16-18</option>
+                            <option value="18-25">18-25</option>
+                            <option value="25-35">25-35</option>
+                            <option value="35+">35+</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nə üçün könüllü olmaq istəyirsiniz?</label>
+                        <textarea placeholder="Motivasiyanızı qısaca yazın..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Hansı sahədə kömək edə bilərsiniz?</label>
+                        <select required>
+                            <option value="">Seçin...</option>
+                            <option value="temizlik">Təmizlik aksiyaları</option>
+                            <option value="maariflendirme">Maarifləndirmə</option>
+                            <option value="sosial">Sosial media</option>
+                            <option value="logistika">Logistika</option>
+                            <option value="her-sey">Hər sahədə</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-user-plus"></i> Qeydiyyatı Tamamla
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-modal-content">
+            <div class="success-icon">🎉</div>
+            <h3>Təbriklər!</h3>
+            <p id="successMessage">Qeydiyyatınız uğurla tamamlandı. Komandamıza xoş gəldiniz!</p>
+            <button class="btn-primary" onclick="closeSuccessModal()">
+                <i class="fas fa-check"></i> Tamam
+            </button>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="contact">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon"><i class="fas fa-leaf"></i></div>
+                    <div class="footer-logo-text">Lökbatan<span>Eco</span></div>
+                </div>
+                <p>
+                    Lökbatan ərazisində tullantıların idarə olunması və antisanitariya
+                    problemlərinin həlli üçün fəaliyyət göstərən ictimai layihə.
+                    Təmiz mühit — sağlam gələcək!
+                </p>
+                <div class="footer-socials">
+                    <a href="#" class="footer-social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="footer-social"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="footer-social"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="footer-social"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="footer-social"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Sürətli Keçidlər</h4>
+                <ul class="footer-links">
+                    <li><a href="#hero"><i class="fas fa-chevron-right"></i> Ana Səhifə</a></li>
+                    <li><a href="#news"><i class="fas fa-chevron-right"></i> Xəbərlər</a></li>
+                    <li><a href="#campaign"><i class="fas fa-chevron-right"></i> Kampaniya</a></li>
+                    <li><a href="#gallery"><i class="fas fa-chevron-right"></i> Qalereya</a></li>
+                    <li><a href="#complaint"><i class="fas fa-chevron-right"></i> Şikayətlər</a></li>
+                    <li><a href="#map-section"><i class="fas fa-chevron-right"></i> Xəritə</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Layihə</h4>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Haqqımızda</a></li>
+                    <li><a href="#" onclick="openVolunteerPage(); return false;"><i class="fas fa-chevron-right"></i> Könüllü Ol</a></li>
+                    <li><a href="#campaign"><i class="fas fa-chevron-right"></i> Kampaniyaya Qoşul</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Hesabatlar</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Partnyorlar</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Əlaqə</h4>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <p>Lökbatan qəsəbəsi, Qaradağ rayonu, Bakı, Azərbaycan</p>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone"></i>
+                    <p>+994 50 123 45 67</p>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>info@lokbataneco.az</p>
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-clock"></i>
+                    <p>Bazar ertəsi - Cümə<br>09:00 - 18:00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 LökbatanEco. Bütün hüquqlar qorunur.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Məxfilik Siyasəti</a>
+                <a href="#">İstifadə Şərtləri</a>
+                <a href="#">Kuki Siyasəti</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon success" id="toastIcon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+            <h4 id="toastTitle">Uğurlu!</h4>
+            <p id="toastText">Əməliyyat uğurla tamamlandı.</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
